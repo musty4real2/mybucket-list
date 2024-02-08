@@ -12,11 +12,23 @@
     
     const inputFieldEl = document.getElementById("input-field")
     const addButtonEl = document.getElementById("add-button")
+    const shoppingListEl = document.getElementById("shopping-list")
     
     addButtonEl.addEventListener("click", function() {
         let inputValue = inputFieldEl.value
         
         push(moviesInDB, inputValue)
-        
-        console.log(`${inputValue} added to database`)
+
+        // inputFieldEl.value = ""
+        clearInputFieldEl()
+        appendItemToShoppingListEl(inputValue)
+        // console.log(`${inputValue} added to database`)
     })
+
+    function clearInputFieldEl() {
+        inputFieldEl.value = ""
+    }
+
+    function appendItemToShoppingListEl(itemValue) {
+        shoppingListEl.innerHTML += `<li>${itemValue}</li>`
+    }
