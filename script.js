@@ -1,6 +1,5 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
 
 const appSettings = {
     databaseURL: "https://playground-afa40-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -18,23 +17,25 @@ addButtonEl.addEventListener("click", function() {
     let inputValue = inputFieldEl.value
     
     push(shoppingListInDB, inputValue)
-    // appendItemToShoppingListEl(inputValue)
     
-    // clearInputFieldEl()
+    clearInputFieldEl()
 })
 
 onValue(shoppingListInDB, function(snapshot) {
-    let itemsArray = Object.values(snapshot.val())
-    
-    clearShoppingListEl()
-    
-    for (let i = 0; i < itemsArray.length; i++) {
-        // appendItemToShoppingListEl(itemsArray[i])
-        let currentItem = itemsArray[i]
-        let currentItemID = currentItem[0]
-        let currentItemValue = currentItem[1]
+    if (snapshot.exists()) {
+        let itemsArray = Object.entries(snapshot.val())
         
-        appendItemToShoppingListEl(currentItemValue)
+        clearShoppingListEl()
+        
+        for (let i = 0; i < itemsArray.length; i++) {
+            let currentItem = itemsArray[i]
+            let currentItemID = currentItem[0]
+            let currentItemValue = currentItem[1]
+            
+            appendItemToShoppingListEl(currentItem)
+        }
+    }else{
+        shoppingListEl.innerHTML = "No items here... yet"
     }
 })
 
@@ -46,6 +47,20 @@ function clearInputFieldEl() {
     inputFieldEl.value = ""
 }
 
-function appendItemToShoppingListEl(itemValue) {
-    shoppingListEl.innerHTML += `<li>${itemValue}</li>`
+function appendItemToShoppingListEl(item) {
+    let itemID = item[0]
+    let itemValue = item[1]
+    
+    let newEl = document.createElement("li")
+    
+    newEl.textContent = itemValue
+    
+    // Challenge: Attach an event listener to newEl and make it so you console log the id of the item when it's pressed.
+    newEl.addEventListener("click", function() {
+        // console.log(itemID)
+        let exactLocationOfItemInDB=ref(database,`movies/${itemID}`)
+        remove(exactLocationOfItemInDB)
+    })
+    
+    shoppingListEl.append(newEl)
 }
